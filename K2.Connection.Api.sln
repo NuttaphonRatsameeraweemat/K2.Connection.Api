@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2036
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "K2.Connection.Api", "K2.Connection.Api\K2.Connection.Api.csproj", "{30D2A633-6D01-469B-9B2A-90FE4A0AE123}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "K2.Connection.Helper", "K2.Connection.Helper\K2.Connection.Helper.csproj", "{3E1DC1B6-C5C4-4592-ACB8-485BA8206644}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{30D2A633-6D01-469B-9B2A-90FE4A0AE123}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30D2A633-6D01-469B-9B2A-90FE4A0AE123}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30D2A633-6D01-469B-9B2A-90FE4A0AE123}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30D2A633-6D01-469B-9B2A-90FE4A0AE123}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E1DC1B6-C5C4-4592-ACB8-485BA8206644}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E1DC1B6-C5C4-4592-ACB8-485BA8206644}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E1DC1B6-C5C4-4592-ACB8-485BA8206644}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E1DC1B6-C5C4-4592-ACB8-485BA8206644}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D3E9BBCB-F125-4DCF-892E-3FF5F1F056C1}
+	EndGlobalSection
+EndGlobal

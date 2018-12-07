@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Web;
 
 namespace K2.Connection.Helper.Interfaces
 {
@@ -14,7 +11,7 @@ namespace K2.Connection.Helper.Interfaces
         /// <summary>
         /// Creates a new session for logging.
         /// </summary>
-        void CreateNewSession();
+        void CreateNewSession(HttpContext context);
 
         /// <summary>
         /// Logs the debug, the message will be logged when debug mode is on.

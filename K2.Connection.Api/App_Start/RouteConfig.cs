@@ -14,9 +14,9 @@ namespace K2.Connection.Api
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
             routes.MapMvcAttributeRoutes();
             routes.MapRoute(
-                name: "Default",
-                url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+                name: "NotFound",
+                url: "{*any}",
+                defaults: new { controller = "ErrorHandler", action = "NotFound" }
             );
         }
     }

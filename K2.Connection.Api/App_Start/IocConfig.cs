@@ -1,6 +1,7 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using K2.Connection.Api.Common;
 using K2.Connection.Helper;
 using K2.Connection.Helper.Interfaces;
 using K2.Connection.Helper.Windsor;
@@ -92,6 +93,21 @@ namespace K2.Connection.Api.App_Start
                                .Named("webApiLogger")
                                .DependsOn(Dependency.OnComponent(typeof(NLog.ILogger), "nlogWebApiLogger"))
                                .LifestyleSingleton()
+                    , Component.For(typeof(ErrorHandlerFilterAttribute))
+                               .DependsOn(Dependency.OnComponent(typeof(ILogger), "webApiLogger")) // Uses NLog config for web api.
+                               .LifestyleTransient()
+                    , Component.For<IApiErrorHandler>()
+                               .ImplementedBy<ApiErrorHandler>()
+                               .LifestyleSingleton()
+                    , Component.For(typeof(LogFilterAttribute))
+                               .DependsOn(Dependency.OnComponent(typeof(ILogger), "webApiLogger")) // Uses NLog config for web api.
+                               .LifestyleTransient()
+                    , Component.For(typeof(MvcLogFilterAttribute))
+                               .DependsOn(Dependency.OnComponent(typeof(ILogger), "webApiLogger")) // Uses NLog config for web api.
+                               .LifestyleTransient()
+                    , Component.For(typeof(MvcLogErrorFilterAttribute))
+                               .DependsOn(Dependency.OnComponent(typeof(ILogger), "webApiLogger")) // Uses NLog config for web api.
+                               .LifestyleTransient()
                 );
             }
         }

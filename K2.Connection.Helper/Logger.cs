@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace K2.Connection.Helper
 {
@@ -18,6 +19,10 @@ namespace K2.Connection.Helper
         /// The session key for Mapped Diagnostic Logical Context (MDLC) of NLog.
         /// </summary>
         private const string NLOG_MDC_SESSION_ID_KEY = "session-id";
+        /// <summary>
+        /// The identity key for Mapped Diagnostic Logical Context (MDLC) of NLog.
+        /// </summary>
+        private const string NLOG_MDC_IDENTITY_KEY = "identity";
         /// <summary>
         /// The NLog logger object.
         /// </summary>
@@ -45,9 +50,10 @@ namespace K2.Connection.Helper
         /// <summary>
         /// Creates a new session for logging.
         /// </summary>
-        public void CreateNewSession()
+        public void CreateNewSession(HttpContext context)
         {
             NLog.MappedDiagnosticsContext.Set(NLOG_MDC_SESSION_ID_KEY, Guid.NewGuid().ToString());
+            NLog.MappedDiagnosticsContext.Set(NLOG_MDC_IDENTITY_KEY, context.User?.Identity.Name ?? "");
         }
 
         /// <summary>

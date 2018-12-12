@@ -37,7 +37,7 @@ namespace K2.Connection.Bll
         /// <param name="model"></param>
         public void Initial(K2ConnectModel model, bool management)
         {
-            _model = SetValue(model.UserName, model.Password, model.Port, model.ImpersonateUser);
+            _model = SetValue(model.UserName, model.Password, model.UserType, model.ImpersonateUser);
             if (management)
             {
                 _connectionManagement = this.ConnectionManagement(_model);
@@ -76,13 +76,14 @@ namespace K2.Connection.Bll
         /// Set value for open connection k2.
         /// </summary>
         /// <returns></returns>
-        private K2ConnectModel SetValue(string userName, string password, int port, string impersonateUser)
+        private K2ConnectModel SetValue(string userName, string password, string userType, string impersonateUser)
         {
             K2ConnectModel result = new K2ConnectModel
             {
                 UserName = userName,
                 Password = password,
-                Port = port,
+                UserType = userType,
+                Port = Convert.ToInt32(ConfigurationManager.AppSettings[ConstantValueService.K2_PORT]),
                 Url = ConfigurationManager.AppSettings[ConstantValueService.K2_URL],
                 SecurityLabelName = ConfigurationManager.AppSettings[ConstantValueService.K2_SECURITYLABEL]
             };
@@ -106,8 +107,6 @@ namespace K2.Connection.Bll
             int retryNum = retry;
             try
             {
-                uint port2 = Convert.ToUInt32(model.Port);
-                connection = new SourceCode.Workflow.Client.Connection();
                 string connectionString = this.GetConnectionString(model);
                 connection.Open(model.Url, connectionString);
                 if (model.Impersonate)
@@ -170,11 +169,11 @@ namespace K2.Connection.Bll
             switch (model.UserType)
             {
                 case ConstantValueService.UserTypeEmployee:
-                    result = string.Format(ConfigurationManager.ConnectionStrings[ConstantValueService.K2_WORKFLOWEMPLOYEE].ToString(), 
+                    result = string.Format(ConfigurationManager.ConnectionStrings[ConstantValueService.K2_WORKFLOWEMPLOYEE].ToString(),
                                            model.Url, model.Port, model.SecurityLabelName, model.UserName, model.Password);
                     break;
                 default:
-                    result = string.Format(ConfigurationManager.ConnectionStrings[ConstantValueService.K2_WORKFLOWIIS].ToString(), 
+                    result = string.Format(ConfigurationManager.ConnectionStrings[ConstantValueService.K2_WORKFLOWIIS].ToString(),
                                            model.Url, model.Port, model.SecurityLabelName);
                     break;
             }

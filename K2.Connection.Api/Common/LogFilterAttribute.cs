@@ -57,10 +57,9 @@ namespace K2.Connection.Api.Common
         {
             // Logs after finished action.
             _logger.Info(String.Format("{0} End call action method.",
-                                       String.Format("{0}/{1} statuc code {2}",
+                                       String.Format("{0}/{1}",
                                                      actionExecutedContext.ActionContext.ActionDescriptor.ControllerDescriptor.ControllerName,
-                                                     actionExecutedContext.ActionContext.ActionDescriptor.ActionName,
-                                                     (int)actionExecutedContext.Response.StatusCode)));
+                                                     actionExecutedContext.ActionContext.ActionDescriptor.ActionName)));
         }
 
         #endregion

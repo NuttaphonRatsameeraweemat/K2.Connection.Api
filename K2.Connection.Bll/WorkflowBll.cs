@@ -1,6 +1,7 @@
 ﻿using SourceCode.Hosting.Client.BaseAPI;
 using SourceCode.Workflow.Client;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using K2.Connection.Bll.Interfaces;
 using K2.Connection.Bll.Models;
@@ -27,18 +28,17 @@ namespace K2.Connection.Bll
         private K2ConnectModel _model;
 
         #endregion
-
-
+        
         #region [Methods]
 
         /// <summary>
         /// Initial for k2 connection.
         /// </summary>
         /// <param name="model"></param>
-        public void Initial(K2ConnectModel model, bool management)
+        public void Initial(K2ProfileModel model)
         {
             _model = SetValue(model.UserName, model.Password, model.UserType, model.ImpersonateUser);
-            if (management)
+            if (model.Management)
             {
                 _connectionManagement = this.ConnectionManagement(_model);
             }
@@ -52,7 +52,7 @@ namespace K2.Connection.Bll
         /// <param name="folio">The title workflow.</param>
         /// <param name="dataFields">The data fields workflow.</param>
         /// <returns>process instance id.</returns>
-        public int StartWorkflow(string processName, string folio, System.Collections.Generic.Dictionary<string, object> dataFields)
+        public int StartWorkflow(string processName, string folio, Dictionary<string, object> dataFields)
         {
             ProcessInstance processInstance = _connection.CreateProcessInstance(processName);
             processInstance.Folio = folio;
@@ -73,6 +73,61 @@ namespace K2.Connection.Bll
         }
 
         /// <summary>
+        /// Action workflow item.
+        /// </summary>
+        /// <param name="serialNumber">The identity workflow.</param>
+        /// <param name="action">The action workflow value.</param>
+        /// <param name="datafields">The data fields workflow.</param>
+        /// <param name="allocatedUser">The allocated user.</param>
+        /// <returns></returns>
+        public string ActionWorkflow(string serialNumber, string action, Dictionary<string, object> datafields, string allocatedUser)
+        {
+            try
+            {
+                bool isSharingItem = false;
+                if ((!string.IsNullOrEmpty(allocatedUser) && !string.IsNullOrEmpty(_model.K2Profile.UserName))
+                    && !string.Equals(allocatedUser, _model.K2Profile.UserName, StringComparison.OrdinalIgnoreCase))
+                {
+                    isSharingItem = true;
+                }
+                WorklistItem worklistItem;
+                if (isSharingItem)
+                {
+                    worklistItem = _connection.OpenSharedWorklistItem(allocatedUser, _model.K2Profile.UserName, serialNumber);
+                }
+                else worklistItem = _connection.OpenWorklistItem(serialNumber, "ASP", true);
+                if (worklistItem == null)
+                {
+                    throw new ArgumentNullException(ConstantValueService.MSG_ERR_CANNOT_FOUND_WORKLISTITEM);
+                }
+                foreach (var datafield in datafields)
+                {
+                    worklistItem.ProcessInstance.DataFields[datafield.Key].Value = datafield.Value;
+                    worklistItem.ProcessInstance.Update();
+                }
+                worklistItem.Actions[action].Execute();
+
+                //Force to Reject for round robin case.
+                if (string.Equals(action, ConstantValueService.K2_REJECT, StringComparison.OrdinalIgnoreCase))
+                {
+                    try
+                    {
+                        worklistItem.GotoActivity(ConstantValueService.K2_REJECT);
+                    }
+                    catch (Exception)
+                    {
+                        /* Ignore this exception */
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException(ex.Message, ex);
+            }
+            return ConstantValueService.MSG_WORKFLOW_ACTION_COMPLETE;
+        }
+
+        /// <summary>
         /// Set value for open connection k2.
         /// </summary>
         /// <returns></returns>
@@ -80,17 +135,20 @@ namespace K2.Connection.Bll
         {
             K2ConnectModel result = new K2ConnectModel
             {
-                UserName = userName,
-                Password = password,
-                UserType = userType,
+                K2Profile = new K2ProfileModel
+                {
+                    UserName = userName,
+                    Password = password,
+                    UserType = userType
+                },
                 Port = Convert.ToInt32(ConfigurationManager.AppSettings[ConstantValueService.K2_PORT]),
                 Url = ConfigurationManager.AppSettings[ConstantValueService.K2_URL],
                 SecurityLabelName = ConfigurationManager.AppSettings[ConstantValueService.K2_SECURITYLABEL]
             };
             if (!string.IsNullOrEmpty(impersonateUser))
             {
-                result.Impersonate = true;
-                result.ImpersonateUser = impersonateUser;
+                result.K2Profile.Impersonate = true;
+                result.K2Profile.ImpersonateUser = impersonateUser;
             }
             return result;
         }
@@ -109,9 +167,9 @@ namespace K2.Connection.Bll
             {
                 string connectionString = this.GetConnectionString(model);
                 connection.Open(model.Url, connectionString);
-                if (model.Impersonate)
+                if (model.K2Profile.Impersonate)
                 {
-                    connection.ImpersonateUser(model.SecurityLabelName + ":" + model.ImpersonateUser);
+                    connection.ImpersonateUser(model.SecurityLabelName + ":" + model.K2Profile.ImpersonateUser);
                 }
 
             }
@@ -166,11 +224,11 @@ namespace K2.Connection.Bll
         {
             string result = string.Empty;
 
-            switch (model.UserType)
+            switch (model.K2Profile.UserType)
             {
-                case ConstantValueService.UserTypeEmployee:
+                case ConstantValueService.USERTYPE_EMPLOYEE:
                     result = string.Format(ConfigurationManager.ConnectionStrings[ConstantValueService.K2_WORKFLOWEMPLOYEE].ToString(),
-                                           model.Url, model.Port, model.SecurityLabelName, model.UserName, model.Password);
+                                           model.Url, model.Port, model.SecurityLabelName, model.K2Profile.UserName, model.K2Profile.Password);
                     break;
                 default:
                     result = string.Format(ConfigurationManager.ConnectionStrings[ConstantValueService.K2_WORKFLOWIIS].ToString(),

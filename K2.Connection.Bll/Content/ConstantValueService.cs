@@ -8,8 +8,23 @@ namespace K2.Connection.Bll.Content
 {
     public class ConstantValueService
     {
-        //User type
-        public const string UserTypeEmployee = "EMPLOYEE";
+        /// <summary>
+        /// The key validate case user type connect to k2.
+        /// </summary>
+        public const string USERTYPE_EMPLOYEE = "EMPLOYEE";
+        
+        /// <summary>
+        /// The key of activity k2 approve.
+        /// </summary>
+        public const string K2_APPROVE = "Approve";
+        /// <summary>
+        /// The key of activity k2 reject.
+        /// </summary>
+        public const string K2_REJECT = "Reject";
+        /// <summary>
+        /// The key of activity k2 cancel.
+        /// </summary>
+        public const string K2_CANCEL = "Cancel";
 
         /// <summary>
         /// The key name of webconfig k2 url.
@@ -43,5 +58,16 @@ namespace K2.Connection.Bll.Content
         /// The key name of webconfig k2 task url.
         /// </summary>
         public const string K2_TASKURL = "K2TaskUrl";
+
+        /// <summary>
+        /// The workflow complete message.
+        /// </summary>
+        public const string MSG_WORKFLOW_ACTION_COMPLETE = "Workflow Action Complete.";
+
+        /// <summary>
+        /// The Error message worklist item is null.
+        /// </summary>
+        public const string MSG_ERR_CANNOT_FOUND_WORKLISTITEM = "Not found work list item.";
+
     }
 }

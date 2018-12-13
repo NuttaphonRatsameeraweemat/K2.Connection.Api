@@ -37,20 +37,28 @@ namespace K2.Connection.Api.Controllers
 
         [HttpPost]
         [Route("StartWorkflow")]
-        public IHttpActionResult StartWorkflow(WorkflowViewModel model)
+        public IHttpActionResult StartWorkflow(StartWorkflowViewModel model)
         {
-            _workflow.Initial(model.K2Connect, model.Management);
-            int processInstantId = _workflow.StartWorkflow(model.ProcessName, model.Folio, model.DataFields);
-            return Ok(processInstantId);
+            _workflow.Initial(model.K2Connect);
+            return Ok(_workflow.StartWorkflow(model.ProcessName, model.Folio, model.DataFields));
         }
 
-        [HttpGet]
-        [Route("")]
-        public IHttpActionResult Test() => Ok();
+        [HttpPost]
+        [Route("ActionWorkflow")]
+        public IHttpActionResult ActionWorkflow(ActionWorkflowViewModel model)
+        {
+            _workflow.Initial(model.K2Connect);
+            return Ok(_workflow.ActionWorkflow(model.SerialNumber, model.Action, model.Datafields, model.AllocatedUser));
+        }
+
+        [HttpPost]
+        [Route("GetWorkList")]
+        public IHttpActionResult GetWorkList()
+        {
+            return Ok();
+        }
 
         #endregion
-
-
-
+        
     }
 }

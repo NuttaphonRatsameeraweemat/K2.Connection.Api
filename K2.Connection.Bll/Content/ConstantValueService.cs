@@ -58,6 +58,10 @@ namespace K2.Connection.Bll.Content
         /// The key name of webconfig k2 task url.
         /// </summary>
         public const string K2_TASKURL = "K2TaskUrl";
+        /// <summary>
+        /// The K2 prefix parameter.
+        /// </summary>
+        public const string K2_PREFIX = "K2:";
 
         /// <summary>
         /// The workflow complete message.

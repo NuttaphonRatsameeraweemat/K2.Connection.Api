@@ -6,6 +6,7 @@ using System.Configuration;
 using K2.Connection.Bll.Interfaces;
 using K2.Connection.Bll.Models;
 using K2.Connection.Bll.Content;
+using System.Linq;
 
 namespace K2.Connection.Bll
 {
@@ -28,7 +29,7 @@ namespace K2.Connection.Bll
         private K2ConnectModel _model;
 
         #endregion
-        
+
         #region [Methods]
 
         /// <summary>
@@ -62,7 +63,7 @@ namespace K2.Connection.Bll
 
             if (dataFields != null)
             {
-                foreach (System.Collections.Generic.KeyValuePair<string, object> current in dataFields)
+                foreach (KeyValuePair<string, object> current in dataFields)
                 {
                     processInstance.DataFields[current.Key].Value = current.Value;
                 }
@@ -125,6 +126,59 @@ namespace K2.Connection.Bll
                 throw new InvalidOperationException(ex.Message, ex);
             }
             return ConstantValueService.MSG_WORKFLOW_ACTION_COMPLETE;
+        }
+
+        public List<TaskViewModel> GetWorkList(string fromUser)
+        {
+            List<TaskViewModel> result = new List<TaskViewModel>();
+            var processFolder = ConfigurationManager.AppSettings["K2ProcessFolder"];
+            if (processFolder == null)
+            {
+                processFolder = "DS";
+            }
+
+            for (int i = 0; i < 2; i++)
+            {
+                try
+                {
+                    Worklist taskList;
+
+                    WorklistCriteria worklistCriteria = new WorklistCriteria();
+                    worklistCriteria.AddFilterField(0, WCCompare.NotEqual, 2);
+                    worklistCriteria.AddFilterField(WCField.ProcessFolder, WCCompare.Equal, processFolder);
+
+                    //For Share Worklist Items
+                    worklistCriteria.AddFilterField(WCLogical.AndBracket, WCField.WorklistItemOwner,
+                                      WCWorklistItemOwner.Me.ToString(), WCCompare.Equal, 0);
+                    worklistCriteria.AddFilterField(WCLogical.Or, WCField.WorklistItemOwner,
+                                      WCWorklistItemOwner.Other.ToString(), WCCompare.Equal, 0);
+
+                    taskList = _connection.OpenWorklist(worklistCriteria);
+                    result = ConvertTaskList(taskList);
+
+                    if (result.Count <= 0)
+                    {
+                        throw new Exception("No Result Found");
+                    }
+
+                    if (!string.IsNullOrEmpty(fromUser))
+                    {
+                        var formUserK2Format = ConstantValueService.K2_PREFIX + fromUser;
+                        result = result.Where(m => string.Equals(m.AllocatedUser, formUserK2Format, StringComparison.OrdinalIgnoreCase)).ToList();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (i == 2)
+                    {
+                        throw ex;
+                    }
+                    System.Threading.Thread.Sleep(50);
+                    this.ReConnection();
+                }
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -190,6 +244,67 @@ namespace K2.Connection.Bll
                 }
             }
             return connection;
+        }
+
+        /// <summary>
+        /// Reconnection k2.
+        /// </summary>
+        private void ReConnection()
+        {
+            if (_connection != null)
+            {
+                _connection.Close();
+            }
+            _connection = Connection(_model);
+        }
+
+        /// <summary>
+        /// Convert work list item to task list viewmodel.
+        /// </summary>
+        /// <param name="worklist">The worklist item.</param>
+        /// <returns></returns>
+        private List<TaskViewModel> ConvertTaskList(Worklist worklist)
+        {
+            List<TaskViewModel> taskList = new List<TaskViewModel>();
+            foreach (WorklistItem item in worklist)
+            {
+                taskList.Add(this.ConvertTask(item));
+            }
+            return taskList;
+        }
+
+        /// <summary>
+        /// Convert work item to task view model.
+        /// </summary>
+        /// <param name="item">The work item.</param>
+        /// <returns></returns>
+        private TaskViewModel ConvertTask(WorklistItem item)
+        {
+            TaskViewModel task = new TaskViewModel
+            {
+                Action = item.Actions.ToString(),
+                AllocatedUser = item.AllocatedUser,
+                DataID = UtilityService.DatafieldToInt(item.ProcessInstance.DataFields["DataID"]),
+                Step = UtilityService.DatafieldToInt(item.ProcessInstance.DataFields["CurrentStep"]),
+                StartDate = item.ProcessInstance.StartDate,
+                Folder = item.ProcessInstance.Folder,
+                Name = item.ProcessInstance.Name,
+                FullName = item.ProcessInstance.FullName,
+                Folio = item.ProcessInstance.Folio,
+                ReceivedDate = UtilityService.DatafieldToDateTime(item.ProcessInstance.DataFields["ReceivedDate"], item.ProcessInstance.StartDate),
+                RequesterName = UtilityService.DatafieldToString(item.ProcessInstance.DataFields["Requester"]),
+                ProcessCode = UtilityService.DatafieldToString(item.ProcessInstance.DataFields["ProcessCode"])
+            };
+            task.Data = $"{item.Data}&ProcessCode={UtilityService.DatafieldToString(item.ProcessInstance.DataFields["ProcessCode"])}" +
+                        $"&DataID={UtilityService.DatafieldToString(item.ProcessInstance.DataFields["DataID"])}";
+
+            string currentStep = UtilityService.DatafieldToString(item.ProcessInstance.DataFields["CurrentStep"]);
+            if (!string.IsNullOrEmpty(currentStep))
+            {
+                task.Data = string.Format(task.Data + "&Step={0}", currentStep);
+            }
+
+            return task;
         }
 
         /// <summary>

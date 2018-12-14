@@ -145,6 +145,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\ActionWorkflowViewModel.cs" />
+    <Compile Include="Models\SetOutOfOfficeViewModel.cs" />
     <Compile Include="Models\StartWorkflowViewModel.cs" />
     <Compile Include="Models\WorklistViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

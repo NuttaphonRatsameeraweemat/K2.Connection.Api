@@ -178,9 +178,8 @@ namespace K2.Connection.Bll
         /// Set out of office worklist.
         /// </summary>
         /// <param name="workflowDelegate">The delegate value.</param>
-        /// <param name="action">The acrion control.</param>
         /// <returns></returns>
-        public string SetOutOfOffice(WorkflowDelegateModel workflowDelegate, string action)
+        public string SetOutOfOffice(WorkflowDelegateModel workflowDelegate)
         {
             string result = string.Empty;
             try
@@ -226,7 +225,7 @@ namespace K2.Connection.Bll
                 worklistshare.WorkTypes.Add(worktype);
 
                 var k2Result = true;
-                switch (action)
+                switch (workflowDelegate.Action)
                 {
                     case ConstantValueService.K2_SHARING_CREATE:
                         // K2Server will create the user's Worklist Sharing, but no sharing will take place unless the Status of the Share is updated

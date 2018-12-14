@@ -10,6 +10,7 @@ namespace K2.Connection.Bll.Models
     {
         public string FromUser { get; set; }
         public string ToUser { get; set; }
+        public string Action { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
     }

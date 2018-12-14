@@ -42,5 +42,12 @@ namespace K2.Connection.Bll.Interfaces
         /// <returns></returns>
         List<TaskViewModel> GetWorkList(string fromUser, int retry = 0);
 
+        /// <summary>
+        /// Set out of office worklist.
+        /// </summary>
+        /// <param name="workflowDelegate">The delegate value.</param>
+        /// <returns></returns>
+        string SetOutOfOffice(WorkflowDelegateModel workflowDelegate);
+
     }
 }

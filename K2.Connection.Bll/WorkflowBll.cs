@@ -175,6 +175,110 @@ namespace K2.Connection.Bll
         }
 
         /// <summary>
+        /// Set out of office worklist.
+        /// </summary>
+        /// <param name="workflowDelegate">The delegate value.</param>
+        /// <param name="action">The acrion control.</param>
+        /// <returns></returns>
+        public string SetOutOfOffice(WorkflowDelegateModel workflowDelegate, string action)
+        {
+            string result = string.Empty;
+            try
+            {
+                if (string.IsNullOrEmpty(workflowDelegate.FromUser))
+                {
+                    throw new Exception(string.Format(ConstantValueService.NOT_FOUND_TEMPLATE, 
+                                                      ConstantValueService.DELEGATE_FROM_USER));
+                }
+                if (string.IsNullOrEmpty(workflowDelegate.ToUser))
+                {
+                    throw new Exception(string.Format(ConstantValueService.NOT_FOUND_TEMPLATE, 
+                                                      ConstantValueService.DELEGATE_TO_USER));
+                }
+                    
+
+                var shareUser = ConstantValueService.K2_PREFIX + workflowDelegate.FromUser;
+                var destinationUser = ConstantValueService.K2_PREFIX + workflowDelegate.ToUser;
+
+                // ALL Work that remains which does not form part of any 'WorkTypeException' Filter
+                SourceCode.Workflow.Management.WorklistCriteria worklistcriteria = new SourceCode.Workflow.Management.WorklistCriteria
+                {
+                    Platform = "ASP"
+                };
+                // Send ALL Work based on the above Filter to the following User
+                SourceCode.Workflow.Management.Destinations worktypedestinations = new SourceCode.Workflow.Management.Destinations
+                {
+                    new SourceCode.Workflow.Management.Destination(destinationUser, SourceCode.Workflow.Management.DestinationType.User)
+                };
+
+
+                // Link the filters and destinations to the Work
+                SourceCode.Workflow.Management.WorkType worktype = new SourceCode.Workflow.Management.WorkType(ConstantValueService.K2_SHARING_NAME, worklistcriteria, worktypedestinations);
+
+                SourceCode.Workflow.Management.WorklistShare worklistshare = new SourceCode.Workflow.Management.WorklistShare
+                {
+                    ShareType = SourceCode.Workflow.Management.ShareType.OOF,
+                    // Sharing dates as per the sample indicates that work will always be shared as long as the correct status is set
+                    // These dates may also be used to only share work for a specific period
+                    StartDate = workflowDelegate.StartDate.Value,
+                    EndDate = workflowDelegate.EndDate.Value
+                };
+                worklistshare.WorkTypes.Add(worktype);
+
+                var k2Result = true;
+                switch (action)
+                {
+                    case ConstantValueService.K2_SHARING_CREATE:
+                        // K2Server will create the user's Worklist Sharing, but no sharing will take place unless the Status of the Share is updated
+                        k2Result = _connectionManagement.ShareWorkList(shareUser, worklistshare);
+
+                        if (!k2Result) throw new InvalidOperationException(ConstantValueService.MSG_ERR_CANNOT_SAVE_SHARING_WORKLIST);
+
+                        // Once this status is updated, each time a user, which the sharing user is sharing any work with opens their Worklist, K2Server will combine the Worklist(s) based on the opening user(s) Worklist Filters
+                        k2Result = _connectionManagement.SetUserStatus(shareUser, SourceCode.Workflow.Management.UserStatuses.OOF);
+
+                        if (!k2Result) throw new InvalidOperationException(ConstantValueService.MSG_ERR_CANNOT_SET_STATUS);
+                        break;
+                    case ConstantValueService.K2_SHARING_EDIT:
+                        //Delete All Old Workflow
+                        k2Result = _connectionManagement.UnShareAll(shareUser);
+
+                        if (!k2Result) throw new InvalidOperationException(ConstantValueService.MSG_ERR_CANNOT_DISABLE_SHARING);
+
+                        //Update New WorkType
+                        k2Result = _connectionManagement.ShareWorkList(shareUser, worklistshare);
+
+                        if (!k2Result) throw new InvalidOperationException(ConstantValueService.MSG_ERR_CANNOT_SAVE_SHARING_WORKLIST);
+
+                        //Update OOF
+                        k2Result = _connectionManagement.SetUserStatus(shareUser, SourceCode.Workflow.Management.UserStatuses.OOF);
+
+                        if (!k2Result) throw new InvalidOperationException(ConstantValueService.MSG_ERR_CANNOT_SET_STATUS);
+                        break;
+                    case ConstantValueService.K2_SHARING_DELETE:
+                        //Delete All Old Workflow
+                        k2Result = _connectionManagement.UnShareAll(shareUser);
+
+                        if (!k2Result) throw new InvalidOperationException(ConstantValueService.MSG_ERR_CANNOT_DISABLE_SHARING);
+
+                        //Set User Sharing To Available
+                        k2Result = _connectionManagement.SetUserStatus(shareUser, SourceCode.Workflow.Management.UserStatuses.Available);
+
+                        if (!k2Result) throw new InvalidOperationException(ConstantValueService.MSG_ERR_CANNOT_SET_STATUS);
+                        break;
+                    default:
+                        throw new InvalidOperationException(ConstantValueService.MSG_ERR_INVALID_OPERATION_ACTION);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Set value for open connection k2.
         /// </summary>
         /// <returns></returns>
@@ -309,15 +413,16 @@ namespace K2.Connection.Bll
             var managementServer = new SourceCode.Workflow.Management.WorkflowManagementServer();
             try
             {
+                model.K2Profile.UserName = ConfigurationManager.AppSettings[ConstantValueService.K2_ADMINUSERNAME];
+                model.K2Profile.Password = ConfigurationManager.AppSettings[ConstantValueService.K2_ADMINPASSWORD];
                 model.Port = 5555;
-                String connectionString = this.GetConnectionString(model);
+                string connectionString = this.GetConnectionString(model);
                 managementServer.Open(connectionString);
 
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
-                //AppLogService.Log(ex.ToString(), "");
-                throw new System.Exception("Unable to create management connection : " + ex.ToString());
+                throw new Exception("Unable to create management connection : " + ex.ToString());
             }
             return managementServer;
         }

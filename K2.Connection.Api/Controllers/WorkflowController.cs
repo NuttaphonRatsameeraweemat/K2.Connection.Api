@@ -59,6 +59,13 @@ namespace K2.Connection.Api.Controllers
             return Ok(_workflow.GetWorkList(model.FromUser));
         }
 
+        [HttpPost]
+        [Route("SetOutOfOffice")]
+        public IHttpActionResult SetOutOfOffice()
+        {
+            return Ok();
+        }
+
         #endregion
         
     }

@@ -27,6 +27,19 @@ namespace K2.Connection.Bll.Content
         public const string K2_CANCEL = "Cancel";
 
         /// <summary>
+        /// The key of create out of office in k2. 
+        /// </summary>
+        public const string K2_SHARING_CREATE = "CREATE";
+        /// <summary>
+        /// The key of edit out of office in k2.
+        /// </summary>
+        public const string K2_SHARING_EDIT = "EDIT";
+        /// <summary>
+        /// The key of delete out of office in k2.
+        /// </summary>
+        public const string K2_SHARING_DELETE = "DELETE";
+
+        /// <summary>
         /// The key name of webconfig k2 url.
         /// </summary>
         public const string K2_URL = "K2Url";
@@ -66,7 +79,11 @@ namespace K2.Connection.Bll.Content
         /// The key name of webconfig k2 process folder.
         /// </summary>
         public const string K2_PROCESSFODLER = "K2ProcessFolder";
-        
+        /// <summary>
+        /// The value of sharing worklist.
+        /// </summary>
+        public const string K2_SHARING_NAME = "K2AsyncShareTask";
+
         /// <summary>
         /// The workflow complete message.
         /// </summary>
@@ -76,6 +93,38 @@ namespace K2.Connection.Bll.Content
         /// The Error message worklist item is null.
         /// </summary>
         public const string MSG_ERR_CANNOT_FOUND_WORKLISTITEM = "Not found work list item.";
+
+        /// <summary>
+        /// The Delegate from user field.
+        /// </summary>
+        public const string DELEGATE_FROM_USER = "DelegateFromUser";
+
+        /// <summary>
+        /// The Delegate to user field.
+        /// </summary>
+        public const string DELEGATE_TO_USER = "DelegateToUser";
+
+        /// <summary>
+        /// The Template not found format.
+        /// </summary>
+        public const string NOT_FOUND_TEMPLATE = "The {0} is empty.";
+
+        /// <summary>
+        /// The Error message invalid set out of office operation.
+        /// </summary>
+        public const string MSG_ERR_INVALID_OPERATION_ACTION = "The action is invalid operation.";
+        /// <summary>
+        /// The Error message can't save status out of office. 
+        /// </summary>
+        public const string MSG_ERR_CANNOT_SET_STATUS = "Can't save user status.";
+        /// <summary>
+        /// The Error message can't disable worklist sharing.
+        /// </summary>
+        public const string MSG_ERR_CANNOT_DISABLE_SHARING = "Can't disable sharing worklist.";
+        /// <summary>
+        /// The Error message can't save sharing worklist.
+        /// </summary>
+        public const string MSG_ERR_CANNOT_SAVE_SHARING_WORKLIST = "Can't save sharing worklist.";
 
     }
 }

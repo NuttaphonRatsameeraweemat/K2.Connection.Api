@@ -62,7 +62,11 @@ namespace K2.Connection.Bll.Content
         /// The K2 prefix parameter.
         /// </summary>
         public const string K2_PREFIX = "K2:";
-
+        /// <summary>
+        /// The key name of webconfig k2 process folder.
+        /// </summary>
+        public const string K2_PROCESSFODLER = "K2ProcessFolder";
+        
         /// <summary>
         /// The workflow complete message.
         /// </summary>

@@ -37,7 +37,7 @@ namespace K2.Connection.Api.Controllers
 
         [HttpPost]
         [Route("StartWorkflow")]
-        public IHttpActionResult StartWorkflow(StartWorkflowViewModel model)
+        public IHttpActionResult StartWorkflow([FromBody]StartWorkflowViewModel model)
         {
             _workflow.Initial(model.K2Connect);
             return Ok(_workflow.StartWorkflow(model.ProcessName, model.Folio, model.DataFields));
@@ -45,7 +45,7 @@ namespace K2.Connection.Api.Controllers
 
         [HttpPost]
         [Route("ActionWorkflow")]
-        public IHttpActionResult ActionWorkflow(ActionWorkflowViewModel model)
+        public IHttpActionResult ActionWorkflow([FromBody]ActionWorkflowViewModel model)
         {
             _workflow.Initial(model.K2Connect);
             return Ok(_workflow.ActionWorkflow(model.SerialNumber, model.Action, model.Datafields, model.AllocatedUser));
@@ -53,9 +53,10 @@ namespace K2.Connection.Api.Controllers
 
         [HttpPost]
         [Route("GetWorkList")]
-        public IHttpActionResult GetWorkList()
+        public IHttpActionResult GetWorkList([FromBody]WorklistViewModel model)
         {
-            return Ok();
+            _workflow.Initial(model.K2Connect);
+            return Ok(_workflow.GetWorkList(model.FromUser));
         }
 
         #endregion

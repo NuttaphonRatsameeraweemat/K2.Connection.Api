@@ -26,7 +26,7 @@ namespace K2.Connection.Bll
             string result = string.Empty;
             if (data != null && data.Value != null)
             {
-                result = data.ToString();
+                result = data.Value.ToString();
             }
             return result;
         }

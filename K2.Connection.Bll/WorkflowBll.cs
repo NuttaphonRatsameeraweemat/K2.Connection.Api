@@ -128,54 +128,47 @@ namespace K2.Connection.Bll
             return ConstantValueService.MSG_WORKFLOW_ACTION_COMPLETE;
         }
 
-        public List<TaskViewModel> GetWorkList(string fromUser)
+        /// <summary>
+        /// Get work list item from k2.
+        /// </summary>
+        /// <param name="fromUser">The allocated user.</param>
+        /// <returns></returns>
+        public List<TaskViewModel> GetWorkList(string fromUser, int retry = 0)
         {
             List<TaskViewModel> result = new List<TaskViewModel>();
-            var processFolder = ConfigurationManager.AppSettings["K2ProcessFolder"];
-            if (processFolder == null)
+            var processFolder = ConfigurationManager.AppSettings[ConstantValueService.K2_PROCESSFODLER];
+            try
             {
-                processFolder = "DS";
+                Worklist taskList;
+
+                WorklistCriteria worklistCriteria = new WorklistCriteria();
+                worklistCriteria.AddFilterField(0, WCCompare.NotEqual, 2);
+                worklistCriteria.AddFilterField(WCField.ProcessFolder, WCCompare.Equal, processFolder);
+
+                //For Share Worklist Items
+                worklistCriteria.AddFilterField(WCLogical.AndBracket, WCField.WorklistItemOwner,
+                                  WCWorklistItemOwner.Me.ToString(), WCCompare.Equal, 0);
+                worklistCriteria.AddFilterField(WCLogical.Or, WCField.WorklistItemOwner,
+                                  WCWorklistItemOwner.Other.ToString(), WCCompare.Equal, 0);
+
+                taskList = _connection.OpenWorklist(worklistCriteria);
+                result = this.ConvertTaskList(taskList);
+
+                if (!string.IsNullOrEmpty(fromUser))
+                {
+                    var formUserK2Format = ConstantValueService.K2_PREFIX + fromUser;
+                    result = result.Where(m => string.Equals(m.AllocatedUser, formUserK2Format, StringComparison.OrdinalIgnoreCase)).ToList();
+                }
             }
-
-            for (int i = 0; i < 2; i++)
+            catch (Exception ex)
             {
-                try
+                if (retry >= 2)
                 {
-                    Worklist taskList;
-
-                    WorklistCriteria worklistCriteria = new WorklistCriteria();
-                    worklistCriteria.AddFilterField(0, WCCompare.NotEqual, 2);
-                    worklistCriteria.AddFilterField(WCField.ProcessFolder, WCCompare.Equal, processFolder);
-
-                    //For Share Worklist Items
-                    worklistCriteria.AddFilterField(WCLogical.AndBracket, WCField.WorklistItemOwner,
-                                      WCWorklistItemOwner.Me.ToString(), WCCompare.Equal, 0);
-                    worklistCriteria.AddFilterField(WCLogical.Or, WCField.WorklistItemOwner,
-                                      WCWorklistItemOwner.Other.ToString(), WCCompare.Equal, 0);
-
-                    taskList = _connection.OpenWorklist(worklistCriteria);
-                    result = ConvertTaskList(taskList);
-
-                    if (result.Count <= 0)
-                    {
-                        throw new Exception("No Result Found");
-                    }
-
-                    if (!string.IsNullOrEmpty(fromUser))
-                    {
-                        var formUserK2Format = ConstantValueService.K2_PREFIX + fromUser;
-                        result = result.Where(m => string.Equals(m.AllocatedUser, formUserK2Format, StringComparison.OrdinalIgnoreCase)).ToList();
-                    }
+                    throw ex;
                 }
-                catch (Exception ex)
-                {
-                    if (i == 2)
-                    {
-                        throw ex;
-                    }
-                    System.Threading.Thread.Sleep(50);
-                    this.ReConnection();
-                }
+                System.Threading.Thread.Sleep(50);
+                this.ReConnection();
+                result = this.GetWorkList(fromUser, ++retry);
             }
 
             return result;
@@ -282,7 +275,6 @@ namespace K2.Connection.Bll
         {
             TaskViewModel task = new TaskViewModel
             {
-                Action = item.Actions.ToString(),
                 AllocatedUser = item.AllocatedUser,
                 DataID = UtilityService.DatafieldToInt(item.ProcessInstance.DataFields["DataID"]),
                 Step = UtilityService.DatafieldToInt(item.ProcessInstance.DataFields["CurrentStep"]),

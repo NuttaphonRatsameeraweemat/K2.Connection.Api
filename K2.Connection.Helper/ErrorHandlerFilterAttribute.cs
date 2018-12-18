@@ -1,15 +1,12 @@
 ﻿using K2.Connection.Helper.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Web.Http.Filters;
 
-namespace K2.Connection.Api.Common
+namespace K2.Connection.Helper
 {
-    /// <summary>
-    /// Class ErrorHandlerFilterAttribute is a filter handling all exceptions occurred in api.
-    /// </summary>
     public class ErrorHandlerFilterAttribute : ExceptionFilterAttribute
     {
+
         #region [Fields]
 
         /// <summary>
@@ -60,5 +57,6 @@ namespace K2.Connection.Api.Common
         }
 
         #endregion
+
     }
 }

@@ -3,13 +3,11 @@ using System;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
 
-namespace K2.Connection.Api.Common
+namespace K2.Connection.Helper
 {
-    /// <summary>
-    /// Class LogFilterAttribute is a filter for handling activity log.
-    /// </summary>
     public class LogFilterAttribute : ActionFilterAttribute
     {
+
         #region [Fields]
 
         /// <summary>
@@ -63,5 +61,6 @@ namespace K2.Connection.Api.Common
         }
 
         #endregion
+
     }
 }

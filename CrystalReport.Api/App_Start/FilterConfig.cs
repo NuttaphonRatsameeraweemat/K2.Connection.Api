@@ -5,8 +5,9 @@ using System.Collections.Generic;
 using System.Web.Http.Filters;
 using System.Web.Mvc;
 
-namespace K2.Connection.Api.App_Start
+namespace CrystalReport.Api.App_Start
 {
+
     /// <summary>
     /// Class ApiFilterConfig is class for register filter.
     /// </summary>
@@ -160,4 +161,5 @@ namespace K2.Connection.Api.App_Start
 
         #endregion
     }
+
 }

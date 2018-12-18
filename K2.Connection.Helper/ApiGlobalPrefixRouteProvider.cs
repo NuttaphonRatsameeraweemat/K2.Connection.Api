@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Web.Http.Controllers;
 using System.Web.Http.Routing;
 
-namespace K2.Connection.Api.Common
+namespace K2.Connection.Helper
 {
     public class ApiGlobalPrefixRouteProvider : DefaultDirectRouteProvider
     {
@@ -46,10 +50,10 @@ namespace K2.Connection.Api.Common
             // Plus route prefix of each controller next to global route.
             if (string.IsNullOrEmpty(_globalPrefix))
             {
-                return String.Format("{0}", existingPrefix == null ? controllerDescriptor.ControllerName : existingPrefix);
+                return string.Format("{0}", existingPrefix ?? controllerDescriptor.ControllerName);
             }
 
-            return String.Format("{0}/{1}", _globalPrefix, existingPrefix == null ? controllerDescriptor.ControllerName : existingPrefix);
+            return string.Format("{0}/{1}", _globalPrefix, existingPrefix ?? controllerDescriptor.ControllerName);
         }
 
         #endregion

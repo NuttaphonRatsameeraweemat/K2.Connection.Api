@@ -1,8 +1,6 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
-using K2.Connection.Bll;
-using K2.Connection.Bll.Interfaces;
 using K2.Connection.Helper;
 using K2.Connection.Helper.Interfaces;
 using K2.Connection.Helper.Windsor;
@@ -13,7 +11,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Http;
 
-namespace K2.Connection.Api.App_Start
+namespace CrystalReport.Api.App_Start
 {
     /// <summary>
     /// The WindsorConfig class provide windsor functionalities such as container.
@@ -109,9 +107,6 @@ namespace K2.Connection.Api.App_Start
                     , Component.For(typeof(MvcLogErrorFilterAttribute))
                                .DependsOn(Dependency.OnComponent(typeof(ILogger), "webApiLogger")) // Uses NLog config for web api.
                                .LifestyleTransient()
-                    , Component.For<IWorkflow>()
-                               .ImplementedBy<WorkflowBll>()
-                               .LifestyleScoped()
                 );
             }
         }

@@ -80,8 +80,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApiErrorHandler.cs" />
+    <Compile Include="ApiGlobalPrefixRouteProvider.cs" />
+    <Compile Include="ErrorHandlerFilterAttribute.cs" />
     <Compile Include="Interfaces\IApiErrorHandler.cs" />
     <Compile Include="Interfaces\ILogger.cs" />
+    <Compile Include="LogFilterAttribute.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Models\ApiErrorModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

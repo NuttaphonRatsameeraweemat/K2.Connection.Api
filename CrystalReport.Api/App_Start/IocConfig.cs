@@ -1,6 +1,8 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using CrystalReport.Bll;
+using CrystalReport.Bll.Interfaces;
 using K2.Connection.Helper;
 using K2.Connection.Helper.Interfaces;
 using K2.Connection.Helper.Windsor;
@@ -107,6 +109,9 @@ namespace CrystalReport.Api.App_Start
                     , Component.For(typeof(MvcLogErrorFilterAttribute))
                                .DependsOn(Dependency.OnComponent(typeof(ILogger), "webApiLogger")) // Uses NLog config for web api.
                                .LifestyleTransient()
+                    , Component.For<ICashAdvance>()
+                               .ImplementedBy<CashAdvanceBll>()
+                               .LifestyleScoped()
                 );
             }
         }

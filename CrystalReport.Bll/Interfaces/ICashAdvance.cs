@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CrystalReport.Bll.Models;
 
 namespace CrystalReport.Bll.Interfaces
 {
     public interface ICashAdvance
     {
+        void SubmitReport(CashAdvanceModel model);
     }
 }

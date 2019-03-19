@@ -39,9 +39,10 @@ namespace K2.Connection.Bll
         public static int DatafieldToInt(DataField data)
         {
             int result = 0;
+            int temp;
             if (data != null && data.Value != null)
             {
-                result = int.TryParse(data.Value.ToString(), out int temp) ? temp : 0;
+                result = int.TryParse(data.Value.ToString(), out temp) ? temp : 0;
             }
             return result;
         }

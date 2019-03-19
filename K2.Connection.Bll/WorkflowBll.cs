@@ -38,7 +38,7 @@ namespace K2.Connection.Bll
         /// <param name="model"></param>
         public void Initial(K2ProfileModel model)
         {
-            _model = SetValue(model.UserName, model.Password, model.UserType, model.ImpersonateUser);
+            _model = this.SetValue(model.UserName, model.Password, model.UserType, model.ImpersonateUser);
             if (model.Management)
             {
                 _connectionManagement = this.ConnectionManagement(_model);

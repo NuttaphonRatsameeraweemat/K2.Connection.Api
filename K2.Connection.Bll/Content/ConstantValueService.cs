@@ -48,6 +48,10 @@ namespace K2.Connection.Bll.Content
         /// </summary>
         public const string K2_PORT = "K2WorkflowPort";
         /// <summary>
+        /// The key name of webconfig k2 management port.
+        /// </summary>
+        public const string K2_MANAGEMENT_PORT = "K2ManagementPort";
+        /// <summary>
         /// The key name of webconifg k2 security label.
         /// </summary>
         public const string K2_SECURITYLABEL = "K2SecurityLabel";

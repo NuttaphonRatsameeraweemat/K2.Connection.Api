@@ -31,14 +31,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SourceCode.HostClientAPI, Version=4.0.0.0, Culture=neutral, PublicKeyToken=16a2c5aaaa1b130d, processorArchitecture=AMD64">
+    <Reference Include="SourceCode.HostClientAPI, Version=4.0.0.0, Culture=neutral, PublicKeyToken=16a2c5aaaa1b130d, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\K2\SourceCode.HostClientAPI.dll</HintPath>
     </Reference>
-    <Reference Include="SourceCode.SmartObjects.Client">
+    <Reference Include="SourceCode.SmartObjects.Client, Version=4.0.0.0, Culture=neutral, PublicKeyToken=16a2c5aaaa1b130d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\K2\SourceCode.SmartObjects.Client.dll</HintPath>
     </Reference>
-    <Reference Include="SourceCode.Workflow.Client, Version=4.0.0.0, Culture=neutral, PublicKeyToken=16a2c5aaaa1b130d, processorArchitecture=x86">
+    <Reference Include="SourceCode.Workflow.Client, Version=4.0.0.0, Culture=neutral, PublicKeyToken=16a2c5aaaa1b130d, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\K2\SourceCode.Workflow.Client.dll</HintPath>
     </Reference>
@@ -58,12 +59,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Content\ConstantValueService.cs" />
+    <Compile Include="Interfaces\ISmartObject.cs" />
     <Compile Include="Interfaces\IWorkflow.cs" />
     <Compile Include="Models\K2ConnectModel.cs" />
     <Compile Include="Models\K2ProfileModel.cs" />
+    <Compile Include="Models\SmartObjectModel.cs" />
     <Compile Include="Models\TaskViewModel.cs" />
     <Compile Include="Models\WorkflowDelegateModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SmartObjectBll.cs" />
     <Compile Include="UtilityService.cs" />
     <Compile Include="WorkflowBll.cs" />
   </ItemGroup>

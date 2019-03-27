@@ -414,7 +414,7 @@ namespace K2.Connection.Bll
             {
                 model.K2Profile.UserName = ConfigurationManager.AppSettings[ConstantValueService.K2_ADMINUSERNAME];
                 model.K2Profile.Password = ConfigurationManager.AppSettings[ConstantValueService.K2_ADMINPASSWORD];
-                model.Port = 5555;
+                model.Port = Convert.ToInt32(ConfigurationManager.AppSettings[ConstantValueService.K2_MANAGEMENT_PORT]);
                 string connectionString = this.GetConnectionString(model);
                 managementServer.Open(connectionString);
 

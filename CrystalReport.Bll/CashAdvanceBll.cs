@@ -42,29 +42,22 @@ namespace CrystalReport.Bll
         {
 
             List<CashAdvanceModel> result = new List<CashAdvanceModel>();
-            try
+            DataTable getDataReport = new DataTable();
+            using (var rd = new ReportDocument())
             {
-                DataTable getDataReport = new DataTable();
-                using (var rd = new ReportDocument())
-                {
-                    rd.Load(Path.Combine(HttpContext.Current.Server.MapPath($"~/Reports/{REPORT_NAME}"), $"{REPORT_NAME}Report.rpt"));
-                    //Parameter
-                    result.Add(model);
-                    //Convert Data To Report
-                    getDataReport = ReportService.ConvertListToDatatable(result);
+                rd.Load(Path.Combine(HttpContext.Current.Server.MapPath($"~/Reports/{REPORT_NAME}"), $"{REPORT_NAME}Report.rpt"));
+                //Parameter
+                result.Add(model);
+                //Convert Data To Report
+                getDataReport = ReportService.ConvertListToDatatable(result);
 
-                    getDataReport.TableName = REPORT_NAME;
-                    rd.SetDataSource(getDataReport);
+                getDataReport.TableName = REPORT_NAME;
+                rd.SetDataSource(getDataReport);
 
-                    //Encoding FileName
-                    ReportService.ExportPdf(rd, REPORT_NAME);
-                }
-                GC.Collect();
+                //Encoding FileName
+                ReportService.ExportPdf(rd, REPORT_NAME);
             }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            GC.Collect();
         }
 
         #endregion

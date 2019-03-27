@@ -112,6 +112,9 @@ namespace K2.Connection.Api.App_Start
                     , Component.For<IWorkflow>()
                                .ImplementedBy<WorkflowBll>()
                                .LifestyleScoped()
+                    , Component.For<ISmartObject>()
+                               .ImplementedBy<SmartObjectBll>()
+                               .LifestyleScoped()
                 );
             }
         }

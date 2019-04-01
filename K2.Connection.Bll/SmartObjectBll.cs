@@ -34,7 +34,10 @@ namespace K2.Connection.Bll
             var result = new List<SmartObjectModel>();
             foreach (SmartObject item in smItem)
             {
+                foreach (SmartProperty property in item.Properties)
+                {
 
+                }
             }
             return result;
         }
@@ -57,10 +60,10 @@ namespace K2.Connection.Bll
                 Host = ConfigurationManager.AppSettings[ConstantValueService.K2_URL],
                 Port = Convert.ToUInt32(ConfigurationManager.AppSettings[ConstantValueService.K2_MANAGEMENT_PORT]),
                 IsPrimaryLogin = true,
-                Integrated = false,
+                Integrated = true,
                 UserID = ConfigurationManager.AppSettings[ConstantValueService.K2_ADMINUSERNAME],
                 Password = ConfigurationManager.AppSettings[ConstantValueService.K2_ADMINPASSWORD],
-                SecurityLabelName = "K2"
+                SecurityLabelName = ConfigurationManager.AppSettings[ConstantValueService.K2_SECURITYLABEL]
             };
             return hostServerConnectionString.ToString();
         }

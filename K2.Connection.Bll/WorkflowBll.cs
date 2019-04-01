@@ -330,7 +330,6 @@ namespace K2.Connection.Bll
 
                 if (retryNum == 2)
                 {
-                    //AppLogService.Log(ex.ToString(), "");
                     throw new System.Exception("Unable to create connection (retry:" + retryNum.ToString() + ") : " + ex.ToString());
                 }
                 else

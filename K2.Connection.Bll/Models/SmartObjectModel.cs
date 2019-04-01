@@ -8,10 +8,8 @@ namespace K2.Connection.Bll.Models
 {
     public class SmartObjectModel
     {
-        public int ProcessSetId { get; set; }
-        public int ProcessId { get; set; }
-        public int ProcessInstancesId { get; set; }
-        public string ProcessSetName { get; set; }
-        public string Status { get; set; }
+        public string SmartObjectName { get; set; }
+        public string ExecuteMethodName { get; set; }
+
     }
 }

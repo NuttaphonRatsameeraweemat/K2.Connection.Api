@@ -15,13 +15,13 @@ namespace K2.Connection.Bll
     public class SmartObjectBll : ISmartObject
     {
 
-        public List<SmartObjectModel> GetSmartObject()
+        public List<SmartObjectModel> GetSmartObject(SmartObjectModel model)
         {
             var result = new List<SmartObjectModel>();
             var soServer = GetServer();
             using (soServer.Connection)
             {
-                var workflowSmartObject = WorkflowSmartObject(soServer);
+                var workflowSmartObject = WorkflowSmartObject(soServer, model);
 
                 var smartObject = soServer.ExecuteList(workflowSmartObject);
                 result = this.ConvertToModel(smartObject.SmartObjectsList);
@@ -34,25 +34,15 @@ namespace K2.Connection.Bll
             var result = new List<SmartObjectModel>();
             foreach (SmartObject item in smItem)
             {
-                result.Add(new SmartObjectModel
-                {
-                    ProcessId = Convert.ToInt32(item.Properties["PROCESS_ID"].Value.ToString()),
-                });
+
             }
             return result;
         }
 
-        private SmartObject WorkflowSmartObject(SmartObjectClientServer soServer, int retry = 1)
+        private SmartObject WorkflowSmartObject(SmartObjectClientServer soServer, SmartObjectModel model)
         {
-            var result = new SmartObject();
-            result = soServer.GetSmartObject("GetTest");
-            if (result == null && retry <= 2)
-            {
-                System.Threading.Thread.Sleep(1500);
-                result = WorkflowSmartObject(soServer, ++retry);
-            }
-            var methodName = "All_Process_Instances";
-            result.MethodToExecute = methodName;
+            var result = soServer.GetSmartObject(model.SmartObjectName);
+            result.MethodToExecute = model.ExecuteMethodName;
             return result;
         }
 
@@ -67,7 +57,7 @@ namespace K2.Connection.Bll
                 Host = ConfigurationManager.AppSettings[ConstantValueService.K2_URL],
                 Port = Convert.ToUInt32(ConfigurationManager.AppSettings[ConstantValueService.K2_MANAGEMENT_PORT]),
                 IsPrimaryLogin = true,
-                Integrated = true,
+                Integrated = false,
                 UserID = ConfigurationManager.AppSettings[ConstantValueService.K2_ADMINUSERNAME],
                 Password = ConfigurationManager.AppSettings[ConstantValueService.K2_ADMINPASSWORD],
                 SecurityLabelName = "K2"

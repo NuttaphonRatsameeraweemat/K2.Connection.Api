@@ -1,4 +1,5 @@
 ﻿using K2.Connection.Bll.Interfaces;
+using K2.Connection.Bll.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,9 +37,9 @@ namespace K2.Connection.Api.Controllers
 
         [HttpPost]
         [Route("GetSmartObject")]
-        public IHttpActionResult GetSmartObject()
+        public IHttpActionResult GetSmartObject(SmartObjectModel model)
         {
-            return Ok(_smartObject.GetSmartObject());
+            return Ok(_smartObject.GetSmartObject(model));
         }
 
         #endregion

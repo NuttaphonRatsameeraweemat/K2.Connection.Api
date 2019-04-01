@@ -10,6 +10,6 @@ namespace K2.Connection.Bll.Interfaces
 {
     public interface ISmartObject
     {
-        List<SmartObjectModel> GetSmartObject();
+        List<SmartObjectModel> GetSmartObject(SmartObjectModel model);
     }
 }

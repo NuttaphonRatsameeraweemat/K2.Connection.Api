@@ -38,7 +38,7 @@ namespace K2.Connection.Bll
         /// <param name="model"></param>
         public void Initial(K2ProfileModel model)
         {
-            _model = this.SetValue(model.UserName, model.Password, model.UserType, model.ImpersonateUser);
+            _model = this.SetValue(model.UserName, model.Password, model.Impersonate, model.ImpersonateUser);
             if (model.Management)
             {
                 _connectionManagement = this.ConnectionManagement(_model);
@@ -186,15 +186,15 @@ namespace K2.Connection.Bll
             {
                 if (string.IsNullOrEmpty(workflowDelegate.FromUser))
                 {
-                    throw new Exception(string.Format(ConstantValueService.NOT_FOUND_TEMPLATE, 
+                    throw new Exception(string.Format(ConstantValueService.NOT_FOUND_TEMPLATE,
                                                       ConstantValueService.DELEGATE_FROM_USER));
                 }
                 if (string.IsNullOrEmpty(workflowDelegate.ToUser))
                 {
-                    throw new Exception(string.Format(ConstantValueService.NOT_FOUND_TEMPLATE, 
+                    throw new Exception(string.Format(ConstantValueService.NOT_FOUND_TEMPLATE,
                                                       ConstantValueService.DELEGATE_TO_USER));
                 }
-                    
+
 
                 var shareUser = ConstantValueService.K2_PREFIX + workflowDelegate.FromUser;
                 var destinationUser = ConstantValueService.K2_PREFIX + workflowDelegate.ToUser;
@@ -281,21 +281,20 @@ namespace K2.Connection.Bll
         /// Set value for open connection k2.
         /// </summary>
         /// <returns></returns>
-        private K2ConnectModel SetValue(string userName, string password, string userType, string impersonateUser)
+        private K2ConnectModel SetValue(string userName, string password, bool impersonate, string impersonateUser)
         {
             K2ConnectModel result = new K2ConnectModel
             {
                 K2Profile = new K2ProfileModel
                 {
                     UserName = userName,
-                    Password = password,
-                    UserType = userType
+                    Password = password
                 },
                 Port = Convert.ToInt32(ConfigurationManager.AppSettings[ConstantValueService.K2_PORT]),
                 Url = ConfigurationManager.AppSettings[ConstantValueService.K2_URL],
                 SecurityLabelName = ConfigurationManager.AppSettings[ConstantValueService.K2_SECURITYLABEL]
             };
-            if (!string.IsNullOrEmpty(impersonateUser))
+            if (impersonate)
             {
                 result.K2Profile.Impersonate = true;
                 result.K2Profile.ImpersonateUser = impersonateUser;
@@ -432,21 +431,8 @@ namespace K2.Connection.Bll
         /// <returns></returns>
         private string GetConnectionString(K2ConnectModel model)
         {
-            string result = string.Empty;
-
-            switch (model.K2Profile.UserType)
-            {
-                case ConstantValueService.USERTYPE_EMPLOYEE:
-                    result = string.Format(ConfigurationManager.ConnectionStrings[ConstantValueService.K2_WORKFLOWEMPLOYEE].ToString(),
+            return string.Format(ConfigurationManager.ConnectionStrings[ConstantValueService.K2_WORKFLOWEMPLOYEE].ToString(),
                                            model.Url, model.Port, model.SecurityLabelName, model.K2Profile.UserName, model.K2Profile.Password);
-                    break;
-                default:
-                    result = string.Format(ConfigurationManager.ConnectionStrings[ConstantValueService.K2_WORKFLOWIIS].ToString(),
-                                           model.Url, model.Port, model.SecurityLabelName);
-                    break;
-            }
-
-            return result;
         }
 
         #endregion

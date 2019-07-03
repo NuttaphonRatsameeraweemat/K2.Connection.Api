@@ -7,6 +7,7 @@ using K2.Connection.Bll.Interfaces;
 using K2.Connection.Bll.Models;
 using K2.Connection.Bll.Content;
 using System.Linq;
+using Polly;
 
 namespace K2.Connection.Bll
 {
@@ -136,41 +137,37 @@ namespace K2.Connection.Bll
         public List<TaskViewModel> GetWorkList(string fromUser, int retry = 0)
         {
             List<TaskViewModel> result = new List<TaskViewModel>();
-            var processFolder = ConfigurationManager.AppSettings[ConstantValueService.K2_PROCESSFODLER];
-            try
-            {
-                Worklist taskList;
+            Policy.Handle<Exception>()
+                  .WaitAndRetry(2,
+                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                    (exception, timeSpan, retryCount, context) =>
+                    {
+                        this.ReConnection();
+                    }).Execute(() =>
+                    {
+                        var processFolder = ConfigurationManager.AppSettings[ConstantValueService.K2_PROCESSFODLER];
 
-                WorklistCriteria worklistCriteria = new WorklistCriteria();
-                worklistCriteria.AddFilterField(0, WCCompare.NotEqual, 2);
-                worklistCriteria.AddFilterField(WCField.ProcessFolder, WCCompare.Equal, processFolder);
+                        Worklist taskList;
 
-                //For Share Worklist Items
-                worklistCriteria.AddFilterField(WCLogical.AndBracket, WCField.WorklistItemOwner,
-                                  WCWorklistItemOwner.Me.ToString(), WCCompare.Equal, 0);
-                worklistCriteria.AddFilterField(WCLogical.Or, WCField.WorklistItemOwner,
-                                  WCWorklistItemOwner.Other.ToString(), WCCompare.Equal, 0);
+                        WorklistCriteria worklistCriteria = new WorklistCriteria();
+                        worklistCriteria.AddFilterField(0, WCCompare.NotEqual, 2);
+                        worklistCriteria.AddFilterField(WCField.ProcessFolder, WCCompare.Equal, processFolder);
 
-                taskList = _connection.OpenWorklist(worklistCriteria);
-                result = this.ConvertTaskList(taskList);
+                        //For Share Worklist Items
+                        worklistCriteria.AddFilterField(WCLogical.AndBracket, WCField.WorklistItemOwner,
+                                          WCWorklistItemOwner.Me.ToString(), WCCompare.Equal, 0);
+                        worklistCriteria.AddFilterField(WCLogical.Or, WCField.WorklistItemOwner,
+                                          WCWorklistItemOwner.Other.ToString(), WCCompare.Equal, 0);
 
-                if (!string.IsNullOrEmpty(fromUser))
-                {
-                    var formUserK2Format = ConstantValueService.K2_PREFIX + fromUser;
-                    result = result.Where(m => string.Equals(m.AllocatedUser, formUserK2Format, StringComparison.OrdinalIgnoreCase)).ToList();
-                }
-            }
-            catch (Exception ex)
-            {
-                if (retry >= 2)
-                {
-                    throw ex;
-                }
-                System.Threading.Thread.Sleep(50);
-                this.ReConnection();
-                result = this.GetWorkList(fromUser, ++retry);
-            }
+                        taskList = _connection.OpenWorklist(worklistCriteria);
+                        result = this.ConvertTaskList(taskList);
 
+                        if (!string.IsNullOrEmpty(fromUser))
+                        {
+                            var formUserK2Format = ConstantValueService.K2_PREFIX + fromUser;
+                            result = result.Where(m => string.Equals(m.AllocatedUser, formUserK2Format, StringComparison.OrdinalIgnoreCase)).ToList();
+                        }
+                    });
             return result;
         }
 
@@ -184,12 +181,12 @@ namespace K2.Connection.Bll
             string result = string.Empty;
             if (string.IsNullOrEmpty(workflowDelegate.FromUser))
             {
-                throw new Exception(string.Format(ConstantValueService.NOT_FOUND_TEMPLATE,
+                throw new ArgumentNullException(string.Format(ConstantValueService.NOT_FOUND_TEMPLATE,
                                                   ConstantValueService.DELEGATE_FROM_USER));
             }
             if (string.IsNullOrEmpty(workflowDelegate.ToUser))
             {
-                throw new Exception(string.Format(ConstantValueService.NOT_FOUND_TEMPLATE,
+                throw new ArgumentNullException(string.Format(ConstantValueService.NOT_FOUND_TEMPLATE,
                                                   ConstantValueService.DELEGATE_TO_USER));
             }
 

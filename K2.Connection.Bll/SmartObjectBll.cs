@@ -12,12 +12,22 @@ using System.Threading.Tasks;
 
 namespace K2.Connection.Bll
 {
+    /// <summary>
+    /// The class of management k2 smartobject. 
+    /// </summary>
     public class SmartObjectBll : ISmartObject
     {
 
-        public List<SmartObjectModel> GetSmartObject(SmartObjectModel model)
+        #region [Methods]
+
+        /// <summary>
+        /// Get Data from Smartobject.
+        /// </summary>
+        /// <param name="model">The information smartobject and method name.</param>
+        /// <returns></returns>
+        public Dictionary<string, string> GetSmartObject(SmartObjectModel model)
         {
-            var result = new List<SmartObjectModel>();
+            var result = new Dictionary<string, string>();
             var soServer = GetServer();
             using (soServer.Connection)
             {
@@ -29,19 +39,30 @@ namespace K2.Connection.Bll
             return result;
         }
 
-        private List<SmartObjectModel> ConvertToModel(SmartObjectCollection smItem)
+        /// <summary>
+        /// Convert Smartobject collection to dictionary.
+        /// </summary>
+        /// <param name="smItem">The SmartObjectCollection.</param>
+        /// <returns></returns>
+        private Dictionary<string, string> ConvertToModel(SmartObjectCollection smItem)
         {
-            var result = new List<SmartObjectModel>();
+            var result = new Dictionary<string, string>();
             foreach (SmartObject item in smItem)
             {
                 foreach (SmartProperty property in item.Properties)
                 {
-
+                    result.Add(property.Name, property.Value);
                 }
             }
             return result;
         }
 
+        /// <summary>
+        /// Initial Smartobject name and method name execute.
+        /// </summary>
+        /// <param name="soServer">The Smartobject server connection.</param>
+        /// <param name="model">The information smartobject and method name.</param>
+        /// <returns></returns>
         private SmartObject WorkflowSmartObject(SmartObjectClientServer soServer, SmartObjectModel model)
         {
             var result = soServer.GetSmartObject(model.SmartObjectName);
@@ -79,6 +100,8 @@ namespace K2.Connection.Bll
             soServer.Connection.Open(this.GetConnectionString());
             return soServer;
         }
+
+        #endregion
 
     }
 }

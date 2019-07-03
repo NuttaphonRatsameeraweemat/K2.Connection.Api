@@ -1,15 +1,18 @@
 ﻿using K2.Connection.Bll.Models;
-using SourceCode.SmartObjects.Client;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace K2.Connection.Bll.Interfaces
 {
+    /// <summary>
+    /// The class of management k2 smartobject. 
+    /// </summary>
     public interface ISmartObject
     {
-        List<SmartObjectModel> GetSmartObject(SmartObjectModel model);
+        /// <summary>
+        /// Get Data from Smartobject.
+        /// </summary>
+        /// <param name="model">The information smartobject and method name.</param>
+        /// <returns></returns>
+        Dictionary<string, string> GetSmartObject(SmartObjectModel model);
     }
 }

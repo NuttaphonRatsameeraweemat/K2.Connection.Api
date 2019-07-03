@@ -16,11 +16,11 @@ You need to install these tools first in order to develop this project.
    - SourceCode.Workflow.Client
    - SourceCode.Workflow.Management
    
-  You can copy dll from server 
+  You can copy dll from k2 server 
   - "~/Program Files (x86)/K2 blackpearl/Host Server/Bin" in K2 blackpearl. 
   - "~/Program Files (x86)/K2/Host Server/Bin" in K2 Five.
   
-  - .NET Framework
+  .NET Framework
   
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
